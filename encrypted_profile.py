@@ -10,7 +10,9 @@ PATH_RSA_KEY = "encrypted_profile_key"
 FILES_BACKUP_SUFFIX = ".plain"
 DIR_ENCRYPTED_PROFILE = "encrypted_profile"
 FILES_ENCRYPTED_DEFAULT = ['bookmarks.html', 'cert8.db', 'cookies.sqlite', 'formhistory.sqlite', 'key3.db',
-                           'permissions.sqlite', 'places.sqlite', 'secmod.db']
+                           'permissions.sqlite', 'places.sqlite', 'secmod.db', 'sessionstore.js',
+                           r'sessionstore-backups\recovery.js', r'sessionstore-backups\recovery.bak',
+                           r'sessionstore-backups\previous.js']
 
 
 def get_parent_dir(file_path): return os.path.abspath(os.path.join(file_path, os.pardir))
@@ -55,12 +57,11 @@ def list_dir(directory: str, relative: bool = False, files: bool = True, directo
 
 
 def main():
+    files_encrypted = set()
     if os.path.isdir(DIR_ENCRYPTED_PROFILE):
-        files_encrypted = list_dir(DIR_ENCRYPTED_PROFILE)
-    else:
-        files_encrypted = [os.path.abspath(DIR_ENCRYPTED_PROFILE) + os.path.sep + file
-                           for file in FILES_ENCRYPTED_DEFAULT]
-
+        files_encrypted.update(list_dir(DIR_ENCRYPTED_PROFILE, directories=False))
+    files_encrypted.update([os.path.abspath(DIR_ENCRYPTED_PROFILE) + os.path.sep + file
+                            for file in FILES_ENCRYPTED_DEFAULT])
     files_decrypted = [file.replace(DIR_ENCRYPTED_PROFILE, r'Data\profile') for file in files_encrypted]
 
     key_password = getpass.getpass("Enter you password for the keys: ")
